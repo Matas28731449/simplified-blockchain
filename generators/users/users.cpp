@@ -1,6 +1,4 @@
-#include "../header.h"
 #include "users.h"
-#include <iostream>
 
 int main() {
     vector<User> users;
@@ -11,9 +9,9 @@ int main() {
 
     ofstream out("../data/users.txt");
 
-    // for (User &u : users) {
-    //     out << u.getName() << " " << u.getPublicKey() << " " << u.getBalance() << "\n";
-    // }
+    for (User &u : users) {
+        out << u.getName() << " " << u.getPublicKey() << " " << u.getBalance() << "\n";
+    }
 
     out.close();
 

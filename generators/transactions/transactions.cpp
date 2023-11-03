@@ -1,7 +1,4 @@
-#include "../header.h"
-#include "../users/users.h"
 #include "transactions.h"
-#include <iostream>
 
 int main() {
     vector<User> users;
@@ -27,12 +24,11 @@ int main() {
 
     random_device rd;
     mt19937 generate(rd());
-    uniform_int_distribution<int> distribute(100, 100000);
 
     for (int i = 0; i < 10000; i ++) {
         int tmp_sender = uniform_int_distribution<int>(0, users.size() - 1)(generate),
             tmp_receiver = uniform_int_distribution<int>(0, users.size() - 1)(generate),
-            amount = distribute(generate);
+            amount = randomize(100, 100000);
         if (amount <= users[tmp_sender].getBalance()) {
             transactions.emplace_back(users[tmp_sender].getPublicKey(), users[tmp_receiver].getPublicKey(), amount);
         }

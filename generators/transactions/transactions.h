@@ -1,4 +1,8 @@
-#include "../header.h"
+#ifndef TRANSACTIONS_H
+#define TRANSACTIONS_H
+
+#include "../../header.h"
+#include "../users/users.h"
 
 class Transaction {
     public:
@@ -6,6 +10,9 @@ class Transaction {
         Transaction(const string &sk, const string &rk, const int &a) : sender_key(sk), receiver_key(rk), amount(a) {
             generateTransactionId();
         }
+
+        Transaction(const string &tid, const string &sk, const string &rk, const int &a)
+        : transaction_id(tid), sender_key(sk), receiver_key(rk), amount(a) { }
 
         const string &getTransactionId() {
             return transaction_id;
@@ -33,8 +40,8 @@ class Transaction {
         void generateTransactionId() {
             uint32_t hash[8];
             memcpy(hash, HASH_CODE, sizeof(HASH_CODE));
-            string compressed = sender_key + receiver_key + to_string(amount);
-            for (char c : compressed) {
+            string compressed_data = sender_key + receiver_key + to_string(amount);
+            for (char c : compressed_data) {
                 for (int i = 0; i < 8; ++i) {
                     hash[i] = mixHash(hash[i], hash[(i + 1) % 8], static_cast<uint32_t>(c));
                 }
@@ -48,3 +55,5 @@ class Transaction {
             transaction_id = result;
         }
 };
+
+#endif

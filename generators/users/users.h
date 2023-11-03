@@ -1,4 +1,7 @@
-#include "../header.h"
+#ifndef USERS_H
+#define USERS_H
+
+#include "../../header.h"
 
 class User {
     public:
@@ -48,9 +51,8 @@ class User {
         }
 
         void generateBalance() {
-            random_device rd;
-            mt19937 generate(rd());
-            uniform_int_distribution<int> distribute(100, 1000000);
-            balance = distribute(generate);
+            balance = randomize(100, 1000000);
         }
 };
+
+#endif
