@@ -1,4 +1,5 @@
 #include "transactions.h"
+#include "../users/users.h"
 
 int main() {
     vector<User> users;
@@ -39,6 +40,8 @@ int main() {
     for (Transaction &t : transactions) {
         out << t.getTransactionId() << " " << t.getSenderKey() << " " << t.getReceiverKey() << " " << t.getAmount() << "\n";
     }
+
+    cout << "Transactions generated\n";
 
     return 0;
 }

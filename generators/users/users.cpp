@@ -15,5 +15,7 @@ int main() {
 
     out.close();
 
+    cout << "Users generated\n";
+
     return 0;
 }

@@ -2,7 +2,6 @@
 #define TRANSACTIONS_H
 
 #include "../../header.h"
-#include "../users/users.h"
 
 class Transaction {
     public:
