@@ -1,6 +1,6 @@
 # simplified-blockchain
 
-## Installation process
+## Installation process & Console commands
 
 Clone my GitHub repository: `git clone https://github.com/Matas28731449/simplified-blockchain.git` ;
 
