@@ -22,14 +22,4 @@ Follow the instructions, happy using!
 
 ## How does blockchain v0.1 work?
 
-The program creates 1000 users, generates 10000 transactions, and then randomly selects 100 transactions for each block ;
-
-These selected transactions are removed from the transaction pool ;
-
-The program proceeds to mine the block until the necessary hash requirements are met ;
-
-Once the block is mined, the selected transactions are executed, updating user balances ;
-
-The newly mined block is subsequently appended to the blockchain ;
-
-The program continues to iterate through this process until the transaction pool becomes empty .
+The program **creates** 1000 users, **generates** 10000 transactions, and then randomly **selects 100 transactions** for each block, **removing** them from the transaction pool. It proceeds to mine the block until the **necessary hash requirements** are met. Once the block is mined, the **selected transactions are executed**, updating user balances. The newly mined block is subsequently **appended** to the blockchain. The program **continues to iterate** through this process until the transaction pool **becomes empty** .
