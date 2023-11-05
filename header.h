@@ -27,6 +27,8 @@ using std::chrono::system_clock;
 using std::chrono::duration_cast;
 using std::uniform_int_distribution;
 
+const int DIFFICULTY_TARGET = 2;
+
 string generateHash(string &str) {
     unsigned long hash = 5381;
     for(char c : str) {

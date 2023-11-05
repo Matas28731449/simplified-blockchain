@@ -30,6 +30,13 @@ class Transaction {
             return amount;
         }
 
+        bool operator==(const Transaction &other) const {
+            return transaction_id == other.transaction_id &&
+                sender_key == other.sender_key &&
+                receiver_key == other.receiver_key &&
+                amount == other.amount;
+        }
+
     private:
 
         string transaction_id,

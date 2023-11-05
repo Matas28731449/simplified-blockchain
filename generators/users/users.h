@@ -2,6 +2,7 @@
 #define USERS_H
 
 #include "../../header.h"
+#include "../transactions/transactions.h"
 
 class User {
     public:
@@ -25,6 +26,15 @@ class User {
 
         const int &getBalance() {
             return balance;
+        }
+
+        void executeTransaction(Transaction &transaction) {
+            if (transaction.getSenderKey() == public_key) {
+                balance -= transaction.getAmount();
+            }
+            else if (transaction.getReceiverKey() == public_key) {
+                balance += transaction.getAmount();
+            }
         }
 
     private:
