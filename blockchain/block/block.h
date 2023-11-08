@@ -41,9 +41,44 @@ private:
         string difficulty_target(DIFFICULTY_TARGET, '0');
         string hash;
 
+        // Merkle tree
+
+        vector<string> hashed_transactions;
+
         for (Transaction &t : transactions) {
-            compressed_data += t.getTransactionId();
+            // Transaction hash validation
+            string transaction_id = t.getSenderKey() + t.getReceiverKey() + to_string(t.getAmount());
+            if (t.getTransactionId() == generateHash(transaction_id)) {
+                string tmp_transaction_data = t.getTransactionId() + t.getSenderKey() + t.getReceiverKey() + to_string(t.getAmount());
+                hashed_transactions.push_back(generateHash(tmp_transaction_data));
+            } else {
+                cout << "Transaction " << t.getTransactionId() << " invalid\n";
+            }
         }
+
+        while (hashed_transactions.size() > 1) {
+            vector<string> merkle_tree;
+
+            for (size_t i = 0; i < hashed_transactions.size(); i += 2) {
+                if (i + 1 < hashed_transactions.size()) {
+                    string compressed_hashes = hashed_transactions[i] + hashed_transactions[i + 1]; // if even, then two different hashes
+                    merkle_tree.push_back(generateHash(compressed_hashes));
+                } else {
+                    string compressed_hash = hashed_transactions[i] + hashed_transactions[i]; // if odd, then same hash
+                    merkle_tree.push_back(generateHash(compressed_hash));
+                }
+            }
+
+            hashed_transactions = merkle_tree;
+        }
+
+        // Bypass the Genesis block
+
+        if (!hashed_transactions.empty()) {
+            compressed_data += hashed_transactions[0];
+        }
+
+        // Mining
 
         do {
             nonce++;

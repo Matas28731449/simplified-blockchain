@@ -44,20 +44,7 @@ class User {
         int    balance;
 
         void generatePublicKey() {
-            uint32_t hash[8];
-            memcpy(hash, HASH_CODE, sizeof(HASH_CODE));
-            for (char c : name) {
-                for (int i = 0; i < 8; ++i) {
-                    hash[i] = mixHash(hash[i], hash[(i + 1) % 8], static_cast<uint32_t>(c));
-                }
-            }
-
-            char result[65];
-            snprintf(result, sizeof(result),
-                     "%08x%08x%08x%08x%08x%08x%08x%08x",
-                     hash[0], hash[1], hash[2], hash[3],
-                     hash[4], hash[5], hash[6], hash[7]);
-            public_key = result;
+            public_key = generateHash(name);
         }
 
         void generateBalance() {
