@@ -13,7 +13,7 @@ class Transaction {
         Transaction(const string &tid, const string &sk, const string &rk, const int &a)
         : transaction_id(tid), sender_key(sk), receiver_key(rk), amount(a) { }
 
-        const string &getTransactionId() {
+        const string &getTransactionId() const {
             return transaction_id;
         }
 

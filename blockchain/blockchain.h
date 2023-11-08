@@ -11,14 +11,90 @@ public:
         chain.push_back(createFirstBlock());
     }
 
+    vector<Transaction> candidate_1,
+                        candidate_2,
+                        candidate_3,
+                        candidate_4,
+                        candidate_5;
+    vector<vector<Transaction>> candidates = {
+        candidate_1,
+        candidate_2,
+        candidate_3,
+        candidate_4,
+        candidate_5
+    };
+
     void compose(vector<User> &users, vector<Transaction> &transactions) {
-        vector<Transaction> selected_transactions;
+        int attempt_duration = 5; // in seconds
+        int max_hash_attempts = 100000;
 
         while (!transactions.empty()) {
-            selectTransactions(1000, selected_transactions, transactions);
-            addBlock(users, selected_transactions);
-            selected_transactions.clear();
+            vector<vector<Transaction>> candidates;
+            // Select transactions for 5 candidate blocks
+            for (int i = 0; i < 5; ++i) {
+                vector<Transaction> candidate_transactions = selectTransactions(100, transactions);
+                if (!candidate_transactions.empty()) {
+                    candidates.push_back(candidate_transactions);
+                }
+            }
+
+            while (!candidates.empty()) {
+                // Randomly select one of the candidate blocks
+                int candidate_index = randomize(0, candidates.size() - 1);
+                vector<Transaction> candidate_block = candidates[candidate_index];
+                // Remove the selected candidate from the list of candidates
+                candidates.erase(candidates.begin() + candidate_index);
+
+                // Try to mine the selected candidate block
+                if (tryMineBlock(users, candidate_block, attempt_duration, max_hash_attempts)) {
+                    break; // If mined successfully, break out of the loop
+                }
+            }
+
+            // Increase limits if no blocks were mined
+            if (chain.size() == 0 || chain.back().transactions.size() == 0) {
+                attempt_duration *= 2; // adjust this factor as needed
+                max_hash_attempts *= 2; // adjust this factor as needed
+            }
         }
+    }
+
+
+
+    vector<Transaction> selectTransactions(int transaction_amount, vector<Transaction> &transactions) {
+        vector<Transaction> selected_transactions;
+
+        for (int i = 0; i < transaction_amount && !transactions.empty(); ++i) {
+            int index = randomize(0, transactions.size() - 1);
+            selected_transactions.push_back(transactions[index]);
+            transactions.erase(transactions.begin() + index); // Remove the selected transaction
+        }
+        
+        return selected_transactions;
+    }
+
+    bool tryMineBlock(vector<User> &users, vector<Transaction> &candidate_block, int attempt_duration, int max_hash_attempts) {
+        int index = chain.size();
+        const string &previous_hash = chain.back().hash;
+
+        // Attempt to mine the block with the given transactions
+        Block block(index, previous_hash, candidate_block, attempt_duration, max_hash_attempts);
+
+        // Check if mining was successful
+        if (block.hash != "0") {
+            // Add block to the chain and update users' balances
+            chain.push_back(block);
+            for (Transaction &t : candidate_block) {
+                for (User &u : users) {
+                    if (u.getPublicKey() == t.getSenderKey()) {
+                        u.executeTransaction(t);
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     void printBlockchain() {
@@ -29,39 +105,10 @@ public:
 
 private:
     vector<Block> chain;
+    bool successful = true;
 
     Block createFirstBlock() {
-        return Block(0, "0", vector<Transaction>());
-    }
-
-    void addBlock(vector<User> &users, vector<Transaction> &selected_transactions) {
-        int index = chain.size();
-        const string &previous_hash = chain.back().hash;
-        
-        vector<Transaction> tmp_valid_transactions;
-
-        // int counter = 0;
-
-        for (Transaction &t : selected_transactions) {
-            bool valid = false;
-
-            for (User &u : users) {
-                if (u.getPublicKey() == t.getSenderKey() && u.getBalance() >= t.getAmount()) {
-                    tmp_valid_transactions.push_back(t);
-                    u.executeTransaction(t);
-                    valid = true;
-                    break;
-                }
-            }
-
-            if (!valid) {
-                // cout << "Transaction " << t.getTransactionId() << " unsuccessful\n";
-                // counter ++;
-            }
-        }   
-
-        chain.push_back(Block(index, previous_hash, tmp_valid_transactions));
-        // cout << counter << " transactions invalid\n";
+        return Block(0, "0", vector<Transaction>(), 0, 0);
     }
 };
 

@@ -15,11 +15,15 @@ public:
     vector<User> users;
     vector<Transaction> transactions;
 
-    Block(int index, const string &previous_hash, const vector<Transaction> &transactions)
-        : index(index), previous_hash(previous_hash), transactions(transactions) {
-        timestamp = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    Block(int idx, const string &prev_hash, const vector<Transaction> &txs, int attempt_duration, int max_hash_attempts)
+        : index(idx), previous_hash(prev_hash), transactions(txs) {
+        
+        timestamp = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::seconds>(
+                    std::chrono::system_clock::now().time_since_epoch()).count());
         nonce = 0;
-        hash = mineBlock();
+        
+        // Now mineBlock() needs these two new parameters
+        hash = mineBlock(attempt_duration, max_hash_attempts);
     }
 
     void printBlock() {
@@ -35,8 +39,7 @@ public:
              << "\n---------------------------------------------------------------------------------------\n";
     }
 
-private:
-    string mineBlock() {
+    string mineBlock(int attempt_duration, int max_hash_attempts) {
         string compressed_data = to_string(index) + previous_hash + to_string(timestamp) + to_string(nonce);
         string difficulty_target(DIFFICULTY_TARGET, '0');
         string hash;
@@ -80,14 +83,32 @@ private:
 
         // Mining
 
+        auto start_time = std::chrono::high_resolution_clock::now();
+        int attempts = 0;
+
         do {
             nonce++;
             compressed_data += to_string(nonce);
             hash = generateHash(compressed_data);
-        } while (hash.substr(0, difficulty_target.size()) != difficulty_target);
 
-        return hash;
-    }
+            // Check if we have a valid hash or if we've reached the maximum attempts
+            if (hash.substr(0, difficulty_target.size()) == difficulty_target || attempts >= max_hash_attempts) {
+                break;
+            }
+
+            attempts++;
+
+            // Check if we've exceeded the time limit
+            auto end_time = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+            if (duration.count() >= attempt_duration) {
+                break;
+            }
+
+        } while (true);
+
+        return hash.substr(0, difficulty_target.size()) != difficulty_target ? "0" : hash;
+    }   
 };
 
 #endif
