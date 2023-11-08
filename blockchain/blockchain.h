@@ -15,7 +15,7 @@ public:
         vector<Transaction> selected_transactions;
 
         while (!transactions.empty()) {
-            selectTransactions(100, selected_transactions, transactions);
+            selectTransactions(1000, selected_transactions, transactions);
             addBlock(users, selected_transactions);
             selected_transactions.clear();
         }
@@ -37,15 +37,31 @@ private:
     void addBlock(vector<User> &users, vector<Transaction> &selected_transactions) {
         int index = chain.size();
         const string &previous_hash = chain.back().hash;
-        chain.push_back(Block(index, previous_hash, selected_transactions));
+        
+        vector<Transaction> tmp_valid_transactions;
+
+        // int counter = 0;
 
         for (Transaction &t : selected_transactions) {
+            bool valid = false;
+
             for (User &u : users) {
-                if (u.getPublicKey() == t.getSenderKey() || u.getPublicKey() == t.getReceiverKey()) {
+                if (u.getPublicKey() == t.getSenderKey() && u.getBalance() >= t.getAmount()) {
+                    tmp_valid_transactions.push_back(t);
                     u.executeTransaction(t);
+                    valid = true;
+                    break;
                 }
             }
-        }
+
+            if (!valid) {
+                // cout << "Transaction " << t.getTransactionId() << " unsuccessful\n";
+                // counter ++;
+            }
+        }   
+
+        chain.push_back(Block(index, previous_hash, tmp_valid_transactions));
+        // cout << counter << " transactions invalid\n";
     }
 };
 

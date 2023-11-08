@@ -29,10 +29,11 @@ int main() {
     for (int i = 0; i < 10000; i ++) {
         int tmp_sender = uniform_int_distribution<int>(0, users.size() - 1)(generate),
             tmp_receiver = uniform_int_distribution<int>(0, users.size() - 1)(generate),
-            amount = randomize(100, 100000);
-        if (amount <= users[tmp_sender].getBalance()) {
+            amount;
+            do {
+                amount = randomize(100, 100000);
+            } while (amount > users[tmp_sender].getBalance());
             transactions.emplace_back(users[tmp_sender].getPublicKey(), users[tmp_receiver].getPublicKey(), amount);
-        }
     }
 
     ofstream out("../data/transactions.txt");
