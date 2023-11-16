@@ -46,13 +46,11 @@ public:
                 candidates.erase(candidates.begin() + candidate_index);
 
                 // Try to mine the selected candidate block
-                if (tryMineBlock(users, candidate_block, attempt_duration, max_hash_attempts)) {
-                    break; // If mined successfully, break out of the loop
-                }
+                if (tryMineBlock(users, candidate_block, attempt_duration, max_hash_attempts)) break; // If mined successfully, break out of the loop
             }
 
             // Increase limits if no blocks were mined
-            if (chain.size() == 0 || chain.back().transactions.size() == 0) {
+            while (chain.size() == 0 || chain.back().transactions.size() == 0) {
                 attempt_duration *= 2; // adjust this factor as needed
                 max_hash_attempts *= 2; // adjust this factor as needed
             }
@@ -95,6 +93,47 @@ public:
             return true;
         }
         return false;
+    }
+
+    void printTransactionById(const string &transactionId) {
+        for (const Block &block : chain) {
+            for (const Transaction &transaction : block.transactions) {
+                if (transaction.getTransactionId() == transactionId) {
+                    cout << "\n---------------------------------------------------------------------------------\n";
+                    cout << "Block index: " << block.index << "\n";
+                    cout << "Block hash: " << block.hash << "\n";
+                    cout << "Transaction ID: " << transaction.getTransactionId() << "\n";
+                    cout << "Sender key: " << transaction.getSenderKey() << "\n";
+                    cout << "Receiver key: " << transaction.getReceiverKey() << "\n";
+                    cout << "Amount: " << transaction.getAmount() << "\n";
+                    cout << "---------------------------------------------------------------------------------\n";
+                    return;
+                }
+            }
+        }
+        cout << "Transaction " << transactionId << " does not exist in the blockchain.\n";
+    }
+
+    void printAllTransactionsId() {
+        std::ofstream out("outputs/transactions.txt");
+
+        for (const Block &block : chain) {
+            block.index == 0 ? out << "--------------------------GENESIS-BLOCK--------------------------\n" : block.index < 10 ? out << "----------------------------BLOCK-0" << block.index << "-----------------------------\n" : 
+            out << "----------------------------BLOCK-" << block.index << "-----------------------------\n";
+            for (const Transaction &transaction : block.transactions) {
+                out << transaction.getTransactionId() << "\n";
+            }
+        }
+
+        out.close();
+    }
+
+    void printSelectedBlock(int blockIndex) {
+        if (blockIndex >= 0 && blockIndex < chain.size()) {
+            chain[blockIndex].printBlock();
+        } else {
+            cout << "\nINVALID BLOCK INDEX: " << chain.size() - 1 << " blocks mined\n";
+        }
     }
 
     void printBlockchain() {

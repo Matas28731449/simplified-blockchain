@@ -17,15 +17,15 @@ class Transaction {
             return transaction_id;
         }
 
-        const string &getSenderKey() {
+        const string &getSenderKey() const {
             return sender_key;
         }
 
-        const string &getReceiverKey() {
+        const string &getReceiverKey() const {
             return receiver_key;
         }
 
-        const int &getAmount() {
+        const int &getAmount() const {
             return amount;
         }
 
