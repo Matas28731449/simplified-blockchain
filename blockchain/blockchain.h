@@ -50,7 +50,7 @@ public:
             }
 
             // Increase limits if no blocks were mined
-            while (chain.size() == 0 || chain.back().transactions.size() == 0) {
+            if (chain.size() == 0 || chain.back().transactions.size() == 0) {
                 attempt_duration *= 2; // adjust this factor as needed
                 max_hash_attempts *= 2; // adjust this factor as needed
             }
@@ -84,7 +84,7 @@ public:
             chain.push_back(block);
             for (Transaction &t : candidate_block) {
                 for (User &u : users) {
-                    if (u.getPublicKey() == t.getSenderKey()) {
+                    if (u.getPublicKey() == t.getSenderKey() && t.getAmount() <= u.getBalance()) {
                         u.executeTransaction(t);
                         break;
                     }
