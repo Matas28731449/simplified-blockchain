@@ -80,8 +80,7 @@ public:
 
         // Check if mining was successful
         if (block.hash != "0") {
-            // Add block to the chain and update users' balances
-            chain.push_back(block);
+            // Update users' balances
             for (Transaction &t : candidate_block) {
                 for (User &u : users) {
                     if (u.getPublicKey() == t.getSenderKey() && t.getAmount() <= u.getBalance()) {
@@ -90,6 +89,8 @@ public:
                     }
                 }
             }
+            // Add block to the chain
+            chain.push_back(block);
             return true;
         }
         return false;
